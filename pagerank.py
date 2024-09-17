@@ -128,23 +128,43 @@ class WebGraph():
                 v = torch.Tensor([1/n]*n)
                 v = torch.unsqueeze(v,1)
             v /= torch.norm(v)
+            v = v.unsqueeze(1) if v.dim() == 1 else v
+            vtranspose = torch.t(v)
+            # print("v:", v)
+            # print("vT:", torch.unsqueeze(vtranspose, 1))
 
             if x0 is None:
                 x0 = torch.Tensor([1/(math.sqrt(n))]*n)
                 x0 = torch.unsqueeze(x0,1)
             x0 /= torch.norm(x0)
+            # print("x0:", x0)
+            # print("xT:", torch.transpose(x0, 0, 1))
+
+            # Create the a vector (dangling nodes)
+            a = torch.zeros(n, 1)
+            for i in range(n):
+                if torch.sum(self.P[i]) == 0:  # Check if the row is all zeros
+                    a[i] = 1
+            
 
             # main loop
             xprev = x0
             x = xprev.detach().clone()
             for i in range(max_iterations):
                 xprev = x.detach().clone()
-
-                # compute the new x vector using Eq (5.1)
-                # FIXME: Task 1
-                # HINT: this can be done with a single call to the `torch.sparse.addmm` function,
-                # but you'll have to read the code above to figure out what variables should get passed to that function
-                # and what pre/post processing needs to be done to them
+                
+                xtranspose = torch.t(xprev)
+                # print("xT:", xtranspose.shape)
+                # print("a:", a.shape)
+                second_term = (alpha * (xtranspose @ a) + (1 - alpha))
+                # print("input", second_term.shape)
+                first_term = torch.mm(alpha * xtranspose, self.P)
+                # print("first term:", first_term.shape)
+                # print("vT:", vtranspose.shape)
+                # print("mat1", (alpha * xtranspose).shape)
+                # # print("input", second_term.shape)
+                # print("mat2", vtranspose.shape)
+                x = torch.t(torch.sparse.addmm(first_term, second_term, vtranspose))
 
                 # output debug information
                 residual = torch.norm(x-xprev)
@@ -155,6 +175,7 @@ class WebGraph():
                     break
 
             #x = x0.squeeze()
+            # print("xshape:", x.squeeze().shape)
             return x.squeeze()
 
 
