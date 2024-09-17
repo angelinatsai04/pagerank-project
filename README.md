@@ -1,25 +1,8 @@
-# Pagerank Project
-
-In this project, you will create a simple search engine for the website <https://www.lawfareblog.com>.
-This website provides legal analysis on US national security issues.
-You will use pagerank to return only the most important results from this website in your search engine.
-
-**Due date:** Sunday, 22 September at midnight
-
-**Late Policy:** You lose $2^{(i-1)}$ points, where i is the number of days late.
-
 <!--
 **Computation:**
 This project has low computational requirements.
 You should be able to complete it on your own laptops.
 -->
-
-**Collaboration Policy:**
-Do whatever will help you learn,
-but be an adult.
-You may talk to other students and use Google/ChatGPT.
-Recall that you will have an in-person oral exam on this material and the exam is worth many more points.
-The main purpose of this project is to help prepare you for the exam.
 
 ## Background
 
