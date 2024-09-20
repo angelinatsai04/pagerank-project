@@ -115,8 +115,7 @@ class WebGraph():
 
         return v
 
-
-    def power_method(self, v=None, x0=None, alpha=0.85, max_iterations=1000, epsilon=1e-6):
+    def power_method(self, v=None, x0=None, alpha=0.85, max_iterations=10000, epsilon=1e-6):
         '''
         This function implements the power method for computing the pagerank.
 
@@ -157,17 +156,10 @@ class WebGraph():
                 xprev = x.detach().clone()
                 
                 xtranspose = torch.t(xprev)
-                # print("xT:", xtranspose.shape)
-                # print("a:", a.shape)
-                second_term = (alpha * (xtranspose @ a) + (1 - alpha))
-                # print("input", second_term.shape)
+                second_term = (alpha * torch.mm(xtranspose, a) + (1 - alpha))
                 first_term = torch.mm(alpha * xtranspose, self.P)
-                # print("first term:", first_term.shape)
-                # print("vT:", vtranspose.shape)
-                # print("mat1", (alpha * xtranspose).shape)
-                # # print("input", second_term.shape)
-                # print("mat2", vtranspose.shape)
                 x = torch.t(torch.sparse.addmm(first_term, second_term, vtranspose))
+                x /= torch.norm(x)
 
                 # output debug information
                 residual = torch.norm(x-xprev)
@@ -254,7 +246,7 @@ if __name__=='__main__':
     parser.add_argument('--search_query', default='')
     parser.add_argument('--filter_ratio', type=float, default=None)
     parser.add_argument('--alpha', type=float, default=0.85)
-    parser.add_argument('--max_iterations', type=int, default=1000)
+    parser.add_argument('--max_iterations', type=int, default=10000)
     parser.add_argument('--epsilon', type=float, default=1e-6)
     parser.add_argument('--max_results', type=int, default=10)
     parser.add_argument('--verbose', action='store_true')
